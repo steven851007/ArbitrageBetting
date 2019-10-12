@@ -10,6 +10,8 @@ import Foundation
 
 class MoneyRun: Codable {
     
+    var sitesFilter = ["bet-at-home", "Interwetten"]
+    
     var combinedMarketMargin: Float {
         return self.maxHomeProbability + self.maxAwayProbability + self.maxDrawProbability
     }
@@ -27,21 +29,15 @@ class MoneyRun: Codable {
     }
     
     var maxHomeSite: Site? {
-        return self.allSites.max(by: { (a, b) -> Bool in
-            return a.odds.home ?? Float.leastNormalMagnitude < b.odds.home ?? Float.leastNormalMagnitude
-        })
+        return self.allSitesOrderedByHomeOdds.first
     }
     
     var maxDrawSite: Site? {
-        return self.allSites.max(by: { (a, b) -> Bool in
-            return a.odds.draw ?? Float.leastNormalMagnitude < b.odds.draw ?? Float.leastNormalMagnitude
-        })
+        return self.allSitesOrderedByDrawOdds.first
     }
     
     var maxAwaySite: Site? {
-        return self.allSites.max(by: { (a, b) -> Bool in
-            return a.odds.away ?? Float.leastNormalMagnitude < b.odds.away ?? Float.leastNormalMagnitude
-        })
+        return self.allSitesOrderedByAwayOdds.first
     }
     
     var maxHomeOdd: Float {
@@ -54,6 +50,24 @@ class MoneyRun: Codable {
     
     var maxAwayOdd: Float {
         return self.maxAwaySite?.odds.away ?? Float.leastNormalMagnitude
+    }
+    
+    var allSitesOrderedByHomeOdds: [Site] {
+        return self.allSites.filter { (site) -> Bool in
+            site.odds.home != nil
+        }.sorted(by: { $0.odds.home! > $1.odds.home! })
+    }
+    
+    var allSitesOrderedByAwayOdds: [Site] {
+        return self.allSites.filter { (site) -> Bool in
+            site.odds.away != nil
+        }.sorted(by: { $0.odds.away! > $1.odds.away! })
+    }
+    
+    var allSitesOrderedByDrawOdds: [Site] {
+        return self.allSites.filter { (site) -> Bool in
+            site.odds.draw != nil
+        }.sorted(by: { $0.odds.draw! > $1.odds.draw! })
     }
     
     var allSites: [Site] {
@@ -97,7 +111,9 @@ class MoneyRun: Codable {
         self.titanbet,
         self.unibet,
         self.williamHill,
-        self.youwin].compactMap { $0 }
+        self.youwin].compactMap { $0 }.filter { (site) -> Bool in
+            sitesFilter.contains(site.name)
+        }
     }
     
     let twelveBet: Site?

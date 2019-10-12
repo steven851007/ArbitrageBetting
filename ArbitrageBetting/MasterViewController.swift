@@ -76,14 +76,7 @@ class MasterViewController: UITableViewController {
                 return
             }
 
-            self.responseObjects = responseObject.filter { result in
-                if result.sites?.moneyRun?.maxAwaySite?.name ?? "" == "bet365" ||
-                result.sites?.moneyRun?.maxDrawSite?.name ?? "" == "bet365" ||
-                result.sites?.moneyRun?.maxHomeSite?.name ?? "" == "bet365" {
-                    return true
-                }
-                return false
-            }
+            self.responseObjects = responseObject
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }

@@ -14,10 +14,58 @@
             filePath = "ArbitrageBetting/MasterViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "113"
-            endingLineNumber = "113"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "106"
+            endingLineNumber = "106"
+            landmarkName = "sendRequest(_:parameters:completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EBBC448D-BC68-487A-8097-D742A6299FEA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ArbitrageBetting/MasterViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "80"
+            endingLineNumber = "80"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "EBBC448D-BC68-487A-8097-D742A6299FEA - ef2815141a7ef27a"
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Optional&lt;Swift.Array&lt;ArbitrageBetting.ResponseObject&gt;&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in ArbitrageBetting.MasterViewController.viewDidLoad() -&gt; ()"
+                  moduleName = "ArbitrageBetting"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/istvanbalogh/Documents/Projects/ArbitrageBetting/ArbitrageBetting/MasterViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "80"
+                  endingLineNumber = "80"
+                  offsetFromSymbolStart = "469">
+               </Location>
+               <Location
+                  uuid = "EBBC448D-BC68-487A-8097-D742A6299FEA - 115e7a3dfbfa7bc4"
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in closure #1 (Swift.Optional&lt;Swift.Array&lt;ArbitrageBetting.ResponseObject&gt;&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in ArbitrageBetting.MasterViewController.viewDidLoad() -&gt; ()"
+                  moduleName = "ArbitrageBetting"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/istvanbalogh/Documents/Projects/ArbitrageBetting/ArbitrageBetting/MasterViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "81"
+                  endingLineNumber = "81"
+                  offsetFromSymbolStart = "39">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

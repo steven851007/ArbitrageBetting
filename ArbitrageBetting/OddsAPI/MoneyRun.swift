@@ -10,7 +10,7 @@ import Foundation
 
 class MoneyRun: Codable {
     
-    var sitesFilter = ["bet-at-home", "Interwetten"]
+    var sitesFilter = ["Pinnacle", "Betfair", "bwin", "Betfair Exchange", "William Hill"]
     
     var combinedMarketMargin: Float {
         return self.maxHomeProbability + self.maxAwayProbability + self.maxDrawProbability
@@ -28,15 +28,15 @@ class MoneyRun: Codable {
         return 1/self.maxDrawOdd
     }
     
-    var maxHomeSite: Site? {
+    var maxHomeSite: OddsAPISite? {
         return self.allSitesOrderedByHomeOdds.first
     }
     
-    var maxDrawSite: Site? {
+    var maxDrawSite: OddsAPISite? {
         return self.allSitesOrderedByDrawOdds.first
     }
     
-    var maxAwaySite: Site? {
+    var maxAwaySite: OddsAPISite? {
         return self.allSitesOrderedByAwayOdds.first
     }
     
@@ -52,25 +52,25 @@ class MoneyRun: Codable {
         return self.maxAwaySite?.odds.away ?? Float.leastNormalMagnitude
     }
     
-    var allSitesOrderedByHomeOdds: [Site] {
+    var allSitesOrderedByHomeOdds: [OddsAPISite] {
         return self.allSites.filter { (site) -> Bool in
             site.odds.home != nil
         }.sorted(by: { $0.odds.home! > $1.odds.home! })
     }
     
-    var allSitesOrderedByAwayOdds: [Site] {
+    var allSitesOrderedByAwayOdds: [OddsAPISite] {
         return self.allSites.filter { (site) -> Bool in
             site.odds.away != nil
         }.sorted(by: { $0.odds.away! > $1.odds.away! })
     }
     
-    var allSitesOrderedByDrawOdds: [Site] {
+    var allSitesOrderedByDrawOdds: [OddsAPISite] {
         return self.allSites.filter { (site) -> Bool in
             site.odds.draw != nil
         }.sorted(by: { $0.odds.draw! > $1.odds.draw! })
     }
     
-    var allSites: [Site] {
+    var allSites: [OddsAPISite] {
         return [self.twelveBet,
         self.oneEightEightBet,
         self.oneEightBet,
@@ -116,47 +116,47 @@ class MoneyRun: Codable {
         }
     }
     
-    let twelveBet: Site?
-    let oneEightEightBet: Site?
-    let oneEightBet: Site?
-    let oneXBet: Site?
-    let eightEightEightSport: Site?
-    let asianodds: Site?
-    let betAtHome: Site?
-    let bet365: Site?
-    let betago: Site?
-    let betclic: Site?
-    let betfair: Site?
-    let betfairExchange: Site?
-    let betfred: Site?
-    let bethard: Site?
-    let betjoe: Site?
-    let betsafe: Site?
-    let betsson: Site?
-    let betvictor: Site?
-    let betway: Site?
-    let boylesports: Site?
-    let bwin: Site?
-    let comeon: Site?
-    let coolbet: Site?
-    let dafabet: Site?
-    let expekt: Site?
-    let intertops: Site?
-    let interwetten: Site?
-    let jetbull: Site?
-    let leonbets: Site?
-    let marathonbet: Site?
-    let matchbook: Site?
-    let mrgreen: Site?
-    let nordicbet: Site?
-    let oddsring: Site?
-    let pinnacle: Site?
-    let sbobet: Site?
-    let sportingbet: Site?
-    let titanbet: Site?
-    let unibet: Site?
-    let williamHill: Site?
-    let youwin: Site?
+    let twelveBet: OddsAPISite?
+    let oneEightEightBet: OddsAPISite?
+    let oneEightBet: OddsAPISite?
+    let oneXBet: OddsAPISite?
+    let eightEightEightSport: OddsAPISite?
+    let asianodds: OddsAPISite?
+    let betAtHome: OddsAPISite?
+    let bet365: OddsAPISite?
+    let betago: OddsAPISite?
+    let betclic: OddsAPISite?
+    let betfair: OddsAPISite?
+    let betfairExchange: OddsAPISite?
+    let betfred: OddsAPISite?
+    let bethard: OddsAPISite?
+    let betjoe: OddsAPISite?
+    let betsafe: OddsAPISite?
+    let betsson: OddsAPISite?
+    let betvictor: OddsAPISite?
+    let betway: OddsAPISite?
+    let boylesports: OddsAPISite?
+    let bwin: OddsAPISite?
+    let comeon: OddsAPISite?
+    let coolbet: OddsAPISite?
+    let dafabet: OddsAPISite?
+    let expekt: OddsAPISite?
+    let intertops: OddsAPISite?
+    let interwetten: OddsAPISite?
+    let jetbull: OddsAPISite?
+    let leonbets: OddsAPISite?
+    let marathonbet: OddsAPISite?
+    let matchbook: OddsAPISite?
+    let mrgreen: OddsAPISite?
+    let nordicbet: OddsAPISite?
+    let oddsring: OddsAPISite?
+    let pinnacle: OddsAPISite?
+    let sbobet: OddsAPISite?
+    let sportingbet: OddsAPISite?
+    let titanbet: OddsAPISite?
+    let unibet: OddsAPISite?
+    let williamHill: OddsAPISite?
+    let youwin: OddsAPISite?
     
     enum CodingKeys: String, CodingKey {
         case twelveBet = "12bet"

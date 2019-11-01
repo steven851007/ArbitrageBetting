@@ -12,12 +12,14 @@ class DetailViewController: UIViewController {
 
     @IBOutlet weak var detailDescriptionLabel: UILabel!
 
+    @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var awayOddsLabel: UILabel!
     @IBOutlet weak var awayBettingSite: UILabel!
     @IBOutlet weak var homeOddsLabel: UILabel!
     @IBOutlet weak var homeBettingSite: UILabel!
     @IBOutlet weak var drawOddsLabel: UILabel!
     @IBOutlet weak var drawBettingSite: UILabel!
+    
     func configureView() {
         // Update the user interface for the detail item.
         if let detail = detailItem {
@@ -33,6 +35,10 @@ class DetailViewController: UIViewController {
                 self.awayBettingSite.text = moneyRun.maxAwaySite?.name
                 self.homeBettingSite.text = moneyRun.maxHomeSite?.name
                 self.drawBettingSite.text = moneyRun.maxDrawSite?.name
+                
+                let df = DateFormatter()
+                df.dateFormat = "yyyy-MM-dd hh:mm:ss"
+                self.dateLabel.text = df.string(from: detail.event.start_time)
             }
         }
     }
@@ -43,7 +49,7 @@ class DetailViewController: UIViewController {
         configureView()
     }
 
-    var detailItem: ResponseObject? {
+    var detailItem: OddsAPIResponseObject? {
         didSet {
             // Update the view.
             configureView()

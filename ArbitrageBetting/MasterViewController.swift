@@ -7,110 +7,47 @@
 //
 
 import UIKit
-
-class League: Codable {
-    let name: String
-}
-
-class ResponseObject: Codable {
-    let event: Event
-    let sites: Sites?
-    let league: League
-    
-    var combinedMarketMargin: Float? {
-        return self.sites?.moneyRun?.combinedMarketMargin
-    }
-}
-
-class Event: Codable {
-    let home: String
-    let away: String
-}
-class Odds: Codable {
-    let home: Float?
-    let draw: Float?
-    let away: Float?
-    
-    enum CodingKeys: String, CodingKey {
-        case home = "1"
-        case draw = "X"
-        case away = "2"
-    }
-}
-
-class Site: Codable {
-    let name: String
-    let odds: Odds
-}
-
-class Sites: Codable {
-    let moneyRun: MoneyRun?
-
-    enum CodingKeys: String, CodingKey {
-        case moneyRun = "1x2"
-    }
-}
-
-
-
+import CoreData
 
 class MasterViewController: UITableViewController {
 
     var detailViewController: DetailViewController? = nil
-    let urlString = "https://app.oddsapi.io/api/v1/odds"
-    var responseObjects: [ResponseObject] = []
+    
+    var responseObjects: [OddsAPIResponseObject] = []
+    var oddsApiNetworkHandler: OddsAPINetworkHandler!
+    var fcr: NSFetchedResultsController<Event>!
+    var coreDataStack: CoreDataStack!
+//    var diffableDataSource: UITableViewDiffableDataSource<String, NSManagedObjectID>!
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        navigationItem.leftBarButtonItem = editButtonItem
-
-        if let split = splitViewController {
-            let controllers = split.viewControllers
-            detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
-        }
         
-        self.sendRequest(self.urlString, parameters: ["sport": "soccer"]) { responseObject, error in
-            guard let responseObject = responseObject, error == nil else {
-                print(error ?? "Unknown error")
-                return
-            }
-
-            self.responseObjects = responseObject
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
+        navigationItem.leftBarButtonItem = editButtonItem
+        self.coreDataStack.applyFilterFor(sites: ["Pinnacle", "Betfair", "bwin", "Betfair Exchange", "William Hill"])
+//        self.diffableDataSource = UITableViewDiffableDataSource<String, NSManagedObjectID>(tableView: self.tableView, cellProvider: { (tableView, indexPath, _) -> UITableViewCell? in
+//            return nil
+//        })
+//        self.tableView.dataSource = self.diffableDataSource
+        
+        self.fcr.delegate = self
+        do {
+            try self.fcr.performFetch()
+            self.tableView.reloadData()
+        } catch {
+            print("Unable to Perform Fetch Request")
+            print("\(error), \(error.localizedDescription)")
         }
-    }
-
-
-    func sendRequest(_ url: String, parameters: [String: String], completion: @escaping ([ResponseObject]?, Error?) -> Void) {
-        var components = URLComponents(string: url)!
-        components.queryItems = parameters.map { (key, value) in
-            URLQueryItem(name: key, value: value)
-        }
-        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
-        var request = URLRequest(url: components.url!)
-        request.setValue("720e3a60-ec48-11e9-aa5a-7de85876d229", forHTTPHeaderField: "apikey")
-
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data,                            // is there data
-                let response = response as? HTTPURLResponse,  // is there HTTP response
-                (200 ..< 300) ~= response.statusCode,         // is statusCode 2XX
-                error == nil else {                           // was there no error, otherwise ...
-                    completion(nil, error)
-                    return
-            }
-
-            let responseObjects: [ResponseObject] = try! JSONDecoder().decode([ResponseObject].self, from: data).filter { $0.combinedMarketMargin != nil }.sorted(by: { $0.combinedMarketMargin! < $1.combinedMarketMargin! })
-            completion(responseObjects, nil)
-        }
-        task.resume()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
-        super.viewWillAppear(animated)
+//        self.oddsApiNetworkHandler.sendRequest { responseObject, error in
+//            guard let responseObject = responseObject, error == nil else {
+//                print(error ?? "Unknown error")
+//                return
+//            }
+//            self.responseObjects = responseObject
+//            DispatchQueue.main.async {
+//                self.tableView.reloadData()
+//            }
+//        }
     }
 
     // MARK: - Segues
@@ -119,9 +56,8 @@ class MasterViewController: UITableViewController {
         if segue.identifier == "showDetail" {
             if let indexPath = tableView.indexPathForSelectedRow {
                 let object = responseObjects[indexPath.row]
-                let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
+                let controller = segue.destination as! DetailViewController
                 controller.detailItem = object
-                controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
                 detailViewController = controller
             }
@@ -131,21 +67,22 @@ class MasterViewController: UITableViewController {
     // MARK: - Table View
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return self.fcr.sections?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return responseObjects.count
+        return self.fcr.fetchedObjects?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        let object = responseObjects[indexPath.row]
-        cell.textLabel!.text = object.event.home + " - " + object.event.away
-        guard let moneyRun = object.sites?.moneyRun else {
-            return cell
-        }
-        cell.detailTextLabel?.text = "1: \(moneyRun.maxHomeSite?.name ?? "") X: \(moneyRun.maxDrawSite?.name ?? "") 2: \(moneyRun.maxAwaySite?.name ?? "") %: \(object.combinedMarketMargin!)"
+        let object = self.fcr.object(at: indexPath)
+        cell.textLabel!.text = object.homeTeam + " - " + object.awayTeam
+//        guard let bookmakers = object.bookmakers else {
+//            return cell
+//        }
+        cell.detailTextLabel?.text = "\(object.combinedMarketMargin)"
+//        cell.detailTextLabel?.text = "1: \(moneyRun.maxHomeSite?.name ?? "") X: \(moneyRun.maxDrawSite?.name ?? "") 2: \(moneyRun.maxAwaySite?.name ?? "") %: \(object.combinedMarketMargin!)"
         return cell
     }
 
@@ -166,3 +103,13 @@ class MasterViewController: UITableViewController {
 
 }
 
+extension MasterViewController: NSFetchedResultsControllerDelegate {
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith diff: CollectionDifference<NSManagedObjectID>) {
+        
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        self.tableView.reloadData()
+    }
+}

@@ -27,6 +27,7 @@
 		BE37C3FC236B7EE0001EA4CB /* CoreDataSyncronizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE37C3FB236B7EE0001EA4CB /* CoreDataSyncronizer.swift */; };
 		BE37C3FE236B7F07001EA4CB /* EventStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE37C3FD236B7F07001EA4CB /* EventStore.swift */; };
 		BE37C400236B7F2E001EA4CB /* BaseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE37C3FF236B7F2E001EA4CB /* BaseStore.swift */; };
+		BE37C406236C10CE001EA4CB /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE37C405236C10CE001EA4CB /* CoreDataStack.swift */; };
 		BED927012368D4F4000808B7 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED927002368D4F4000808B7 /* SettingViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -53,6 +54,7 @@
 		BE37C3FB236B7EE0001EA4CB /* CoreDataSyncronizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataSyncronizer.swift; sourceTree = "<group>"; };
 		BE37C3FD236B7F07001EA4CB /* EventStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventStore.swift; sourceTree = "<group>"; };
 		BE37C3FF236B7F2E001EA4CB /* BaseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseStore.swift; sourceTree = "<group>"; };
+		BE37C405236C10CE001EA4CB /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		BED927002368D4F4000808B7 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -119,6 +121,7 @@
 				BE37C402236B7F65001EA4CB /* ManagedObjects */,
 				BE37C401236B7F4B001EA4CB /* Stores */,
 				BE37C3FB236B7EE0001EA4CB /* CoreDataSyncronizer.swift */,
+				BE37C405236C10CE001EA4CB /* CoreDataStack.swift */,
 			);
 			path = CoreDataStack;
 			sourceTree = "<group>";
@@ -223,6 +226,7 @@
 				871B0FB72350F60B0039ACCF /* MasterViewController.swift in Sources */,
 				BE37C3F5236B7B32001EA4CB /* HomeOdds+CoreDataProperties.swift in Sources */,
 				871B0FB92350F60B0039ACCF /* DetailViewController.swift in Sources */,
+				BE37C406236C10CE001EA4CB /* CoreDataStack.swift in Sources */,
 				BE37C400236B7F2E001EA4CB /* BaseStore.swift in Sources */,
 				871B0FC92351056B0039ACCF /* MoneyRun.swift in Sources */,
 				BE37C3F7236B7B32001EA4CB /* AwayOdds+CoreDataProperties.swift in Sources */,

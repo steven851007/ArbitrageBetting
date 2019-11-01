@@ -55,13 +55,21 @@ class MasterViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = tableView.indexPathForSelectedRow {
-                let object = responseObjects[indexPath.row]
+                let object = self.fcr.object(at: indexPath)
                 let controller = segue.destination as! DetailViewController
                 controller.detailItem = object
                 controller.navigationItem.leftItemsSupplementBackButton = true
                 detailViewController = controller
             }
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return self.fcr.sections?[section].name
+    }
+
+    override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        return self.fcr.sectionIndexTitles
     }
 
     // MARK: - Table View
@@ -73,16 +81,30 @@ class MasterViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.fcr.fetchedObjects?.count ?? 0
     }
+    
+    func validateIndexPath(_ indexPath: IndexPath) -> Bool {
+        if let sections = self.fcr?.sections,
+        indexPath.section < sections.count {
+           if indexPath.row < sections[indexPath.section].numberOfObjects {
+              return true
+           }
+        }
+        return false
+    }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        guard self.validateIndexPath(indexPath) else {
+            return cell
+        }
         let object = self.fcr.object(at: indexPath)
         cell.textLabel!.text = object.homeTeam + " - " + object.awayTeam
-//        guard let bookmakers = object.bookmakers else {
-//            return cell
-//        }
-        cell.detailTextLabel?.text = "\(object.combinedMarketMargin)"
-//        cell.detailTextLabel?.text = "1: \(moneyRun.maxHomeSite?.name ?? "") X: \(moneyRun.maxDrawSite?.name ?? "") 2: \(moneyRun.maxAwaySite?.name ?? "") %: \(object.combinedMarketMargin!)"
+        guard let homeOdds = object.homeOdds?.firstObject as? HomeOdds,
+        let awayOdds = object.awayOdds?.firstObject as? AwayOdds,
+        let drawOdds = object.drawOdds?.firstObject as? DrawOdds else {
+            return cell
+        }
+        cell.detailTextLabel?.text = "1: \(homeOdds.bookmakerName) X: \(drawOdds.bookmakerName) 2: \(awayOdds.bookmakerName) %: \(object.combinedMarketMargin)"
         return cell
     }
 

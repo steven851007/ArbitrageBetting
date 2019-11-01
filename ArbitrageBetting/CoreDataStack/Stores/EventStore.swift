@@ -13,8 +13,8 @@ class EventStore: BaseStore<Event> {
     
     func fcr() -> NSFetchedResultsController<Event> {
         let fetchRequest: NSFetchRequest<Event> = Event.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "combinedMarketMargin", ascending: true)]
-        let fcr = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.context, sectionNameKeyPath: nil, cacheName: nil)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortDate", ascending: true), NSSortDescriptor(key: "combinedMarketMargin", ascending: true)]
+        let fcr = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.context, sectionNameKeyPath: "sectionName", cacheName: "Root")
         return fcr
     }
     
@@ -33,15 +33,12 @@ class EventStore: BaseStore<Event> {
     
     func sortOdds(oddsArray: [Odds]) -> [Odds] {
         return oddsArray.sorted {
-            if $0.isActive == $1.isActive && $0.isActive == true {
+            if $0.isActive == $1.isActive {
                 return $0.odds > $1.odds
             } else if $0.isActive {
                 return true
-            } else if $1.isActive {
-                return false
             }
-            
-            return $0.odds > $1.odds
+            return false
         }
     }
 

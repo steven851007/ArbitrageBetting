@@ -25,6 +25,24 @@ public class Event: NSManagedObject {
     @NSManaged public var homeOdds: NSOrderedSet?
     @NSManaged public var awayOdds: NSOrderedSet?
     @NSManaged public var drawOdds: NSOrderedSet?
+    @objc public var sectionName: String {
+        get {
+            return DateFormatter.longFormatter.string(from: self.date)
+        }
+    }
+    @NSManaged public var sortDate: Date
+    
+    override public func didChangeValue(forKey key: String) {
+        super.didChangeValue(forKey: key)
+
+        if key == "date" {
+            guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: self.date)) else {
+                fatalError("Failed to strip time from Date object")
+            }
+            self.sortDate = date
+        }
+    }
+    
     
 }
 

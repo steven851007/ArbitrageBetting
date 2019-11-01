@@ -12,6 +12,7 @@
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="eventId" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="homeTeam" attributeType="String"/>
+        <attribute name="sortDate" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="awayOdds" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="AwayOdds" inverseName="event" inverseEntity="AwayOdds"/>
         <relationship name="drawOdds" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="DrawOdds" inverseName="event" inverseEntity="DrawOdds"/>
         <relationship name="homeOdds" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="HomeOdds" inverseName="event" inverseEntity="HomeOdds"/>
@@ -27,7 +28,7 @@
     <elements>
         <element name="AwayOdds" positionX="95.49609375" positionY="156.1953125" width="128" height="58"/>
         <element name="DrawOdds" positionX="183.26171875" positionY="204.7421875" width="128" height="58"/>
-        <element name="Event" positionX="-90.57421875" positionY="115.46875" width="128" height="163"/>
+        <element name="Event" positionX="-90.57421875" positionY="115.46875" width="128" height="178"/>
         <element name="HomeOdds" positionX="317.078125" positionY="232.40625" width="128" height="58"/>
         <element name="Odds" positionX="181.94921875" positionY="-57.55078125" width="128" height="88"/>
     </elements>

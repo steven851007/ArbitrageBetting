@@ -38,26 +38,27 @@ class CoreDataSyncronizer {
         var awayOddsArray = [AwayOdds]()
         var drawOddsArray = [DrawOdds]()
         for oddsAPISite in responseObject.sites?.moneyRun?.allSites ?? [] {
-            guard let homeOdds = oddsAPISite.odds.home,
-                let awayOdds = oddsAPISite.odds.away,
-                let drawOdds = oddsAPISite.odds.draw else {
-                    continue
+            if let homeOdds = oddsAPISite.odds.home {
+                let newHomeOdd = self.homeOddsStore.newObject()
+                newHomeOdd.bookmakerName = oddsAPISite.name
+                newHomeOdd.odds = homeOdds
+                homeOddsArray.append(newHomeOdd)
             }
-            let newHomeOdd = self.homeOddsStore.newObject()
-            newHomeOdd.bookmakerName = oddsAPISite.name
-            newHomeOdd.odds = homeOdds
-            homeOddsArray.append(newHomeOdd)
-
-            let newAwayOdd = self.awayOddsStore.newObject()
-            newAwayOdd.bookmakerName = oddsAPISite.name
-            newAwayOdd.odds = awayOdds
-            awayOddsArray.append(newAwayOdd)
-
-            let newDrawOdd = self.drawOddsStore.newObject()
-            newDrawOdd.bookmakerName = oddsAPISite.name
-            newDrawOdd.odds = drawOdds
-            drawOddsArray.append(newDrawOdd)
             
+            if let awayOdds = oddsAPISite.odds.away {
+                let newAwayOdd = self.awayOddsStore.newObject()
+                newAwayOdd.bookmakerName = oddsAPISite.name
+                newAwayOdd.odds = awayOdds
+                awayOddsArray.append(newAwayOdd)
+            }
+
+            if let drawOdds = oddsAPISite.odds.draw {
+                let newDrawOdd = self.drawOddsStore.newObject()
+                newDrawOdd.bookmakerName = oddsAPISite.name
+                newDrawOdd.odds = drawOdds
+                drawOddsArray.append(newDrawOdd)
+            }
+
         }
         homeOddsArray.sort { $0.odds > $1.odds }
         awayOddsArray.sort { $0.odds > $1.odds }
@@ -65,7 +66,9 @@ class CoreDataSyncronizer {
         
         guard let highestHomeOdd = homeOddsArray.first?.odds,
             let highestAwayOdd = awayOddsArray.first?.odds,
-            let highestDrawOdd = drawOddsArray.first?.odds else { return }
+            let highestDrawOdd = drawOddsArray.first?.odds else {
+                return
+        }
         
         let event = eventStore.eventFor(homeTeam: responseObject.event.home, awayTeam: responseObject.event.away) ?? self.eventStore.newObject()
         event.eventId = UUID()

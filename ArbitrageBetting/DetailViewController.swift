@@ -24,21 +24,23 @@ class DetailViewController: UIViewController {
         // Update the user interface for the detail item.
         if let detail = detailItem {
             if let label = detailDescriptionLabel {
-                label.text = detail.event.home + " - " + detail.event.away + " in " + detail.league.name
-                guard let moneyRun = detail.sites?.moneyRun else {
+                label.text = detail.homeTeam + " - " + detail.awayTeam //+ " in " + detail.league.name
+                guard let homeOdds = detail.homeOdds?.firstObject as? HomeOdds,
+                let awayOdds = detail.awayOdds?.firstObject as? AwayOdds,
+                let drawOdds = detail.drawOdds?.firstObject as? DrawOdds else {
                     return
                 }
-                self.awayOddsLabel.text = "\(moneyRun.maxAwayOdd)"
-                self.drawOddsLabel.text = "\(moneyRun.maxDrawOdd)"
-                self.homeOddsLabel.text = "\(moneyRun.maxHomeOdd)"
+                self.awayOddsLabel.text = "\(awayOdds.odds)"
+                self.drawOddsLabel.text = "\(drawOdds.odds)"
+                self.homeOddsLabel.text = "\(homeOdds.odds)"
                 
-                self.awayBettingSite.text = moneyRun.maxAwaySite?.name
-                self.homeBettingSite.text = moneyRun.maxHomeSite?.name
-                self.drawBettingSite.text = moneyRun.maxDrawSite?.name
+                self.awayBettingSite.text = awayOdds.bookmakerName
+                self.homeBettingSite.text = homeOdds.bookmakerName
+                self.drawBettingSite.text = drawOdds.bookmakerName
                 
                 let df = DateFormatter()
                 df.dateFormat = "yyyy-MM-dd hh:mm:ss"
-                self.dateLabel.text = df.string(from: detail.event.start_time)
+                self.dateLabel.text = df.string(from: detail.date)
             }
         }
     }
@@ -49,7 +51,7 @@ class DetailViewController: UIViewController {
         configureView()
     }
 
-    var detailItem: OddsAPIResponseObject? {
+    var detailItem: Event? {
         didSet {
             // Update the view.
             configureView()

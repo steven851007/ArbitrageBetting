@@ -42,7 +42,9 @@ class OddsAPINetworkHandler {
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .formatted(DateFormatter.iso8601Full)
             let responseObjects: [OddsAPIResponseObject] = try! decoder.decode([OddsAPIResponseObject].self, from: data)
-            self.coreDataStack.syncronizer.updateWith(responseObjects: responseObjects)
+            DispatchQueue.main.async {
+                self.coreDataStack.syncronizer.updateWith(responseObjects: responseObjects)
+            }
             completion(responseObjects, nil)
         }
         task.resume()

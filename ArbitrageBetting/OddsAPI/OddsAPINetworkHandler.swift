@@ -21,7 +21,7 @@ class OddsAPINetworkHandler {
     }
     
     
-    func sendRequest(completion: @escaping ([OddsAPIResponseObject]?, Error?) -> Void) {
+    func fetchLatestEvents(completion: @escaping ([OddsAPIResponseObject]?, Error?) -> Void) {
         var components = URLComponents(string: self.urlString)!
         components.queryItems = self.parameters.map { (key, value) in
             URLQueryItem(name: key, value: value)

@@ -30,6 +30,8 @@ public class Event: NSManagedObject {
             return DateFormatter.longFormatter.string(from: self.date)
         }
     }
+    
+    /// Date contains only the year month and day
     @NSManaged public var sortDate: Date
     
     override public func didChangeValue(forKey key: String) {

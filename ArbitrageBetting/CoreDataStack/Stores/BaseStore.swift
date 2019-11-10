@@ -21,6 +21,10 @@ class BaseStore<T> where T: NSManagedObject {
         return NSFetchRequest<T>(entityName: String(describing: T.self))
     }
     
+    func fetchRequestResult() -> NSFetchRequest<NSFetchRequestResult> {
+        return NSFetchRequest<NSFetchRequestResult>(entityName: String(describing: T.self))
+    }
+    
     func allObjects() -> [T] {
         let fetchRequest = self.fetchRequest()
         do {
@@ -33,6 +37,14 @@ class BaseStore<T> where T: NSManagedObject {
     
     func newObject() -> T {
         return T(context: self.context)
+    }
+    
+    func deleteObjectsWithRequest(_ request: NSBatchDeleteRequest) {
+        do {
+            try context.execute(request)
+        } catch {
+            print ("There was an error")
+        }
     }
     
     func save () {

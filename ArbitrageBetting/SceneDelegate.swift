@@ -16,7 +16,7 @@ class ArbitrageTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.arbitrageNavController = self.viewControllers!.first! as! ArbitrageNavigationController
+        self.arbitrageNavController = self.viewControllers!.first! as? ArbitrageNavigationController
         self.arbitrageNavController.configuration = self.configuration
     }
     
@@ -46,6 +46,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
+        self.configuration.coreDataStack.eventStore.deleteAllEventsBeforeDay(Date())
+        self.configuration.coreDataStack.eventStore.save()
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
     }
@@ -61,11 +63,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
+        self.configuration.bgTaskCoordinator.scheduleAppRefresh()
         
-        // Save changes in the application's managed object context when the application transitions to the background.
     }
 
 }

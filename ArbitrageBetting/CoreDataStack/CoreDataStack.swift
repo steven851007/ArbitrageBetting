@@ -26,6 +26,8 @@ class CoreDataStack {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        container.viewContext.mergePolicy = NSMergePolicy(merge: NSMergePolicyType.mergeByPropertyStoreTrumpMergePolicyType)
         self.persistentContainer = container
         self.eventStore = EventStore(context: self.persistentContainer.viewContext)
         self.homeOddsStore = HomeOddsStore(context: self.persistentContainer.viewContext)
@@ -39,6 +41,13 @@ class CoreDataStack {
         self.oddsStore.applyFilterFor(sites: sites)
         self.eventStore.recalculateCombinedMarketMargins()
         self.eventStore.save()
+    }
+    
+    func newBackgroundContext() -> NSManagedObjectContext {
+        let backgroundContext = self.persistentContainer.newBackgroundContext()
+        backgroundContext.automaticallyMergesChangesFromParent = true
+        backgroundContext.mergePolicy = NSMergePolicy(merge: NSMergePolicyType.mergeByPropertyStoreTrumpMergePolicyType)
+        return backgroundContext
     }
     
 }

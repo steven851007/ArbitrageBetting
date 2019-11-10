@@ -65,4 +65,15 @@ class EventStore: BaseStore<Event> {
             event.combinedMarketMargin = 1/highestHomeOdd + 1/highestAwayOdd + 1/highestDrawOdd
         }
     }
+    
+    func deleteAllEventsBeforeDay(_ date: Date) {
+        guard let dayDate = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: date)) else {
+            fatalError("Failed to strip time from Date object")
+        }
+        
+        let fetchRequest = self.fetchRequestResult()
+        fetchRequest.predicate = NSPredicate(format: "sortDate < %@", dayDate as NSDate)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        self.deleteObjectsWithRequest(deleteRequest)
+    }
 }

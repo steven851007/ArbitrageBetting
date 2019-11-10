@@ -28,6 +28,8 @@
 		BE37C3FE236B7F07001EA4CB /* EventStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE37C3FD236B7F07001EA4CB /* EventStore.swift */; };
 		BE37C400236B7F2E001EA4CB /* BaseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE37C3FF236B7F2E001EA4CB /* BaseStore.swift */; };
 		BE37C406236C10CE001EA4CB /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE37C405236C10CE001EA4CB /* CoreDataStack.swift */; };
+		BE491B3823783C300042C6C4 /* BGTaskCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE491B3723783C300042C6C4 /* BGTaskCoordinator.swift */; };
+		BE491B3A23783D250042C6C4 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE491B3923783D250042C6C4 /* Configuration.swift */; };
 		BED927012368D4F4000808B7 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED927002368D4F4000808B7 /* SettingViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +57,8 @@
 		BE37C3FD236B7F07001EA4CB /* EventStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventStore.swift; sourceTree = "<group>"; };
 		BE37C3FF236B7F2E001EA4CB /* BaseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseStore.swift; sourceTree = "<group>"; };
 		BE37C405236C10CE001EA4CB /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		BE491B3723783C300042C6C4 /* BGTaskCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGTaskCoordinator.swift; sourceTree = "<group>"; };
+		BE491B3923783D250042C6C4 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		BED927002368D4F4000808B7 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -90,6 +94,8 @@
 			children = (
 				BE37C3FA236B7EC1001EA4CB /* CoreDataStack */,
 				871B0FB22350F60B0039ACCF /* AppDelegate.swift */,
+				BE491B3723783C300042C6C4 /* BGTaskCoordinator.swift */,
+				BE491B3923783D250042C6C4 /* Configuration.swift */,
 				871B0FB42350F60B0039ACCF /* SceneDelegate.swift */,
 				871B0FB62350F60B0039ACCF /* MasterViewController.swift */,
 				BE37C3D8236A2450001EA4CB /* ArbitrageNavigationController.swift */,
@@ -223,9 +229,11 @@
 				BE37C3DB236A2BBE001EA4CB /* OddsAPINetworkHandler.swift in Sources */,
 				BE37C3E1236B75B6001EA4CB /* Odds+CoreDataProperties.swift in Sources */,
 				871B0FB52350F60B0039ACCF /* SceneDelegate.swift in Sources */,
+				BE491B3823783C300042C6C4 /* BGTaskCoordinator.swift in Sources */,
 				871B0FB72350F60B0039ACCF /* MasterViewController.swift in Sources */,
 				BE37C3F5236B7B32001EA4CB /* HomeOdds+CoreDataProperties.swift in Sources */,
 				871B0FB92350F60B0039ACCF /* DetailViewController.swift in Sources */,
+				BE491B3A23783D250042C6C4 /* Configuration.swift in Sources */,
 				BE37C406236C10CE001EA4CB /* CoreDataStack.swift in Sources */,
 				BE37C400236B7F2E001EA4CB /* BaseStore.swift in Sources */,
 				871B0FC92351056B0039ACCF /* MoneyRun.swift in Sources */,

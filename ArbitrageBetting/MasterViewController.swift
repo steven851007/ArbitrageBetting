@@ -18,10 +18,14 @@ class MasterViewController: UITableViewController {
     var fcr: NSFetchedResultsController<Event>!
     var coreDataStack: CoreDataStack!
     var diffableDataSource: UITableViewDiffableDataSource<String, NSManagedObjectID>!
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.refreshControl = UIRefreshControl()
+        self.refreshControl!.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        self.refreshControl!.addTarget(self, action: #selector(fetchData(_:)), for: UIControl.Event.valueChanged)
+        tableView.addSubview(refreshControl!)
         
         navigationItem.leftBarButtonItem = editButtonItem
         self.coreDataStack.applyFilterFor(sites: ["Pinnacle", "Betfair", "bwin", "Betfair Exchange", "William Hill"])
@@ -50,7 +54,11 @@ class MasterViewController: UITableViewController {
             print("Unable to Perform Fetch Request")
             print("\(error), \(error.localizedDescription)")
         }
-//        self.oddsApiNetworkHandler.fetchLatestEvents { responseObject, error in
+
+    }
+    
+    @objc func fetchData(_ control: UIRefreshControl) {
+        self.oddsApiNetworkHandler.fetchLatestEvents { responseObject, error in
 //            guard let responseObject = responseObject, error == nil else {
 //                print(error ?? "Unknown error")
 //                return
@@ -59,7 +67,7 @@ class MasterViewController: UITableViewController {
 //            DispatchQueue.main.async {
 //                self.tableView.reloadData()
 //            }
-//        }
+        }
     }
     
     func updateSnapshot() {

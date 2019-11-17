@@ -15,6 +15,8 @@
 		871B0FBE2350F60E0039ACCF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 871B0FBD2350F60E0039ACCF /* Assets.xcassets */; };
 		871B0FC12350F60E0039ACCF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 871B0FBF2350F60E0039ACCF /* LaunchScreen.storyboard */; };
 		871B0FC92351056B0039ACCF /* MoneyRun.swift in Sources */ = {isa = PBXBuildFile; fileRef = 871B0FC82351056B0039ACCF /* MoneyRun.swift */; };
+		BE01FA3D238157C000EBD782 /* EventFetchedResulsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE01FA3C238157C000EBD782 /* EventFetchedResulsController.swift */; };
+		BE01FA3F23816AEE00EBD782 /* OddsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE01FA3E23816AEE00EBD782 /* OddsStore.swift */; };
 		BE37C3B4236A1613001EA4CB /* ArbitrageBetting.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BE37C3B2236A1613001EA4CB /* ArbitrageBetting.xcdatamodeld */; };
 		BE37C3CF236A1D7C001EA4CB /* OddsAPIObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE37C3CE236A1D7C001EA4CB /* OddsAPIObjects.swift */; };
 		BE37C3D5236A1E96001EA4CB /* Event+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE37C3D1236A1E96001EA4CB /* Event+CoreDataProperties.swift */; };
@@ -44,6 +46,8 @@
 		871B0FC02350F60E0039ACCF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		871B0FC22350F60E0039ACCF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		871B0FC82351056B0039ACCF /* MoneyRun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyRun.swift; sourceTree = "<group>"; };
+		BE01FA3C238157C000EBD782 /* EventFetchedResulsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventFetchedResulsController.swift; sourceTree = "<group>"; };
+		BE01FA3E23816AEE00EBD782 /* OddsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OddsStore.swift; sourceTree = "<group>"; };
 		BE37C3B3236A1613001EA4CB /* CoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreData.xcdatamodel; sourceTree = "<group>"; };
 		BE37C3CE236A1D7C001EA4CB /* OddsAPIObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OddsAPIObjects.swift; sourceTree = "<group>"; };
 		BE37C3D1236A1E96001EA4CB /* Event+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Event+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -137,6 +141,8 @@
 			children = (
 				BE37C3FD236B7F07001EA4CB /* EventStore.swift */,
 				BE37C3FF236B7F2E001EA4CB /* BaseStore.swift */,
+				BE01FA3E23816AEE00EBD782 /* OddsStore.swift */,
+				BE01FA3C238157C000EBD782 /* EventFetchedResulsController.swift */,
 			);
 			path = Stores;
 			sourceTree = "<group>";
@@ -234,10 +240,12 @@
 				BE37C3F5236B7B32001EA4CB /* HomeOdds+CoreDataProperties.swift in Sources */,
 				871B0FB92350F60B0039ACCF /* DetailViewController.swift in Sources */,
 				BE491B3A23783D250042C6C4 /* Configuration.swift in Sources */,
+				BE01FA3D238157C000EBD782 /* EventFetchedResulsController.swift in Sources */,
 				BE37C406236C10CE001EA4CB /* CoreDataStack.swift in Sources */,
 				BE37C400236B7F2E001EA4CB /* BaseStore.swift in Sources */,
 				871B0FC92351056B0039ACCF /* MoneyRun.swift in Sources */,
 				BE37C3F7236B7B32001EA4CB /* AwayOdds+CoreDataProperties.swift in Sources */,
+				BE01FA3F23816AEE00EBD782 /* OddsStore.swift in Sources */,
 				BE37C3CF236A1D7C001EA4CB /* OddsAPIObjects.swift in Sources */,
 				BED927012368D4F4000808B7 /* SettingViewController.swift in Sources */,
 				BE37C3F3236B7B32001EA4CB /* DrawOdds+CoreDataProperties.swift in Sources */,

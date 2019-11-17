@@ -15,9 +15,10 @@ class MasterViewController: UITableViewController {
     
     var responseObjects: [OddsAPIResponseObject] = []
     var oddsApiNetworkHandler: OddsAPINetworkHandler!
-    var fcr: NSFetchedResultsController<Event>!
+    var fcr: EventFetchedResulsController!
     var coreDataStack: CoreDataStack!
     var diffableDataSource: UITableViewDiffableDataSource<String, NSManagedObjectID>!
+    var updatedObjects = [NSManagedObjectID]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +30,7 @@ class MasterViewController: UITableViewController {
         
         navigationItem.leftBarButtonItem = editButtonItem
         self.coreDataStack.applyFilterFor(sites: ["Pinnacle", "Betfair", "bwin", "Betfair Exchange", "William Hill"])
-        self.diffableDataSource = UITableViewDiffableDataSource<String, NSManagedObjectID>(tableView: self.tableView, cellProvider: { (tableView, indexPath, _) -> UITableViewCell? in
+        self.diffableDataSource = UITableViewDiffableDataSource<String, NSManagedObjectID>(tableView: self.tableView, cellProvider: { [unowned self] (tableView, indexPath, _) -> UITableViewCell? in
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
             guard self.validateIndexPath(indexPath) else {
                 return cell
@@ -42,47 +43,25 @@ class MasterViewController: UITableViewController {
                 return cell
             }
             cell.detailTextLabel?.text = "1: \(homeOdds.bookmakerName) X: \(drawOdds.bookmakerName) 2: \(awayOdds.bookmakerName) %: \(object.combinedMarketMargin)"
+            cell.contentView.backgroundColor = self.updatedObjects.contains(object.objectID) ? .black : .darkGray
             return cell
         })
         self.tableView.dataSource = self.diffableDataSource
         self.tableView.delegate = self
         self.fcr.delegate = self
-        do {
-            try self.fcr.performFetch()
-            self.updateSnapshot()
-        } catch {
-            print("Unable to Perform Fetch Request")
-            print("\(error), \(error.localizedDescription)")
-        }
-
+        self.fcr.fetch()
     }
     
     @objc func fetchData(_ control: UIRefreshControl) {
-        self.oddsApiNetworkHandler.fetchLatestEvents { responseObject, error in
-//            guard let responseObject = responseObject, error == nil else {
-//                print(error ?? "Unknown error")
-//                return
-//            }
-//            self.responseObjects = responseObject
-//            DispatchQueue.main.async {
-//                self.tableView.reloadData()
-//            }
+        self.oddsApiNetworkHandler.fetchLatestEvents { _, error in
+            DispatchQueue.main.async {
+                control.endRefreshing()
+            }
+            if let error = error {
+                print(error)
+                return
+            }
         }
-    }
-    
-    func updateSnapshot() {
-        var diffableDataSourceSnapshot = NSDiffableDataSourceSnapshot<String, NSManagedObjectID>()
-        guard let sections = self.fcr.sections else { return }
-        let sectionIds = sections.map { $0.name }
-        diffableDataSourceSnapshot.appendSections(sectionIds)
-        
-        for (_, sectionInfo) in sections.enumerated() {
-            guard let objects = sectionInfo.objects as? [NSManagedObject] else { return }
-            let objectIds = objects.map { $0.objectID }
-            diffableDataSourceSnapshot.appendItems(objectIds, toSection: sectionInfo.name)
-        }
-            
-        self.diffableDataSource.apply(diffableDataSourceSnapshot)
     }
 
     // MARK: - Segues
@@ -101,14 +80,13 @@ class MasterViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UILabel()
-        view.text = self.fcr.sections?[section].name
+        view.text = self.fcr.sections[section].name
         return view
     }
     
     func validateIndexPath(_ indexPath: IndexPath) -> Bool {
-        if let sections = self.fcr?.sections,
-        indexPath.section < sections.count {
-           if indexPath.row < sections[indexPath.section].numberOfObjects {
+        if indexPath.section < self.fcr.sections.count {
+           if indexPath.row < self.fcr.sections[indexPath.section].numberOfObjects {
               return true
            }
         }
@@ -121,6 +99,11 @@ extension MasterViewController: NSFetchedResultsControllerDelegate {
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
+        if self.diffableDataSource.numberOfSections(in: self.tableView) > 0 {
+            self.updatedObjects = snapshot.itemIdentifiers
+        }
         self.diffableDataSource.apply(snapshot)
     }
+    
+
 }

@@ -25,37 +25,30 @@ class CoreDataSyncronizer {
     }
     
     func updateWith(responseObjects: [OddsAPIResponseObject]) {
-        for responseObject in responseObjects {
-            self.updateWith(responseObject: responseObject)
+        for responseObject in responseObjects where responseObject.hasAtLeastOneOdds {
+            self.createOrUpdateEventWith(responseObject)
         }
         self.eventStore.save()
     }
-    
 
     
-    func updateWith(responseObject: OddsAPIResponseObject) {
-        var homeOddsArray = [HomeOdds]()
-        var awayOddsArray = [AwayOdds]()
-        var drawOddsArray = [DrawOdds]()
+    func createOrUpdateEventWith(_ responseObject: OddsAPIResponseObject) {
+        let event = eventStore.eventFor(homeTeam: responseObject.event.home, awayTeam: responseObject.event.away) ?? eventStore.newObject()
+        
+        var homeOddsArray = event.homeOdds?.array as? [HomeOdds] ?? [HomeOdds]()
+        var awayOddsArray = event.awayOdds?.array as? [AwayOdds] ?? [AwayOdds]()
+        var drawOddsArray = event.drawOdds?.array as? [DrawOdds] ?? [DrawOdds]()
+        
         for oddsAPISite in responseObject.sites?.moneyRun?.allSites ?? [] {
-            if let homeOdds = oddsAPISite.odds.home {
-                let newHomeOdd = self.homeOddsStore.newObject()
-                newHomeOdd.bookmakerName = oddsAPISite.name
-                newHomeOdd.odds = homeOdds
+            if let newHomeOdd = self.homeOddsStore.createOrUpdateIn(&homeOddsArray, with: oddsAPISite) {
                 homeOddsArray.append(newHomeOdd)
             }
             
-            if let awayOdds = oddsAPISite.odds.away {
-                let newAwayOdd = self.awayOddsStore.newObject()
-                newAwayOdd.bookmakerName = oddsAPISite.name
-                newAwayOdd.odds = awayOdds
+            if let newAwayOdd = self.awayOddsStore.createOrUpdateIn(&awayOddsArray, with: oddsAPISite) {
                 awayOddsArray.append(newAwayOdd)
             }
 
-            if let drawOdds = oddsAPISite.odds.draw {
-                let newDrawOdd = self.drawOddsStore.newObject()
-                newDrawOdd.bookmakerName = oddsAPISite.name
-                newDrawOdd.odds = drawOdds
+            if let newDrawOdd = self.drawOddsStore.createOrUpdateIn(&drawOddsArray, with: oddsAPISite) {
                 drawOddsArray.append(newDrawOdd)
             }
 
@@ -67,17 +60,41 @@ class CoreDataSyncronizer {
         guard let highestHomeOdd = homeOddsArray.first?.odds,
             let highestAwayOdd = awayOddsArray.first?.odds,
             let highestDrawOdd = drawOddsArray.first?.odds else {
-                return
+                fatalError()
+                
         }
         
-        let event = eventStore.eventFor(homeTeam: responseObject.event.home, awayTeam: responseObject.event.away) ?? self.eventStore.newObject()
-        event.eventId = UUID()
-        event.homeTeam = responseObject.event.home
-        event.awayTeam = responseObject.event.away
-        event.date = responseObject.event.start_time
-        event.combinedMarketMargin = 1/highestHomeOdd + 1/highestAwayOdd + 1/highestDrawOdd
-        event.homeOdds = NSOrderedSet(array: homeOddsArray)
-        event.awayOdds = NSOrderedSet(array: awayOddsArray)
-        event.drawOdds = NSOrderedSet(array: drawOddsArray)
+        if event.eventId == nil {
+            event.eventId = UUID()
+        }
+        
+        if event.homeTeam != responseObject.event.home {
+            event.homeTeam = responseObject.event.home
+        }
+        
+        if event.awayTeam != responseObject.event.away {
+            event.awayTeam = responseObject.event.away
+        }
+        
+        if event.date != responseObject.event.start_time {
+            event.date = responseObject.event.start_time
+        }
+        
+        if event.combinedMarketMargin != 1/highestHomeOdd + 1/highestAwayOdd + 1/highestDrawOdd {
+            event.combinedMarketMargin = 1/highestHomeOdd + 1/highestAwayOdd + 1/highestDrawOdd
+        }
+        
+        if event.homeOdds != NSOrderedSet(array: homeOddsArray) {
+            event.homeOdds = NSOrderedSet(array: homeOddsArray)
+        }
+
+        if event.awayOdds != NSOrderedSet(array: awayOddsArray) {
+            event.awayOdds = NSOrderedSet(array: awayOddsArray)
+        }
+
+        if event.drawOdds != NSOrderedSet(array: drawOddsArray) {
+            event.drawOdds = NSOrderedSet(array: drawOddsArray)
+        }
     }
+    
 }

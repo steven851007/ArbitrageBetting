@@ -11,10 +11,10 @@ import CoreData
 
 class EventStore: BaseStore<Event> {
     
-    func fcr() -> NSFetchedResultsController<Event> {
+    func fcr() -> EventFetchedResulsController {
         let fetchRequest: NSFetchRequest<Event> = Event.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortDate", ascending: true), NSSortDescriptor(key: "combinedMarketMargin", ascending: true)]
-        let fcr = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.context, sectionNameKeyPath: "sectionName", cacheName: "Root")
+        let fcr = EventFetchedResulsController(fetchRequest: fetchRequest, managedObjectContext: self.context, sectionNameKeyPath: "sectionName", cacheName: "Root")
         return fcr
     }
     

@@ -18,8 +18,8 @@ public class Event: NSManagedObject {
     }
     
     @NSManaged public var awayTeam: String
-    @NSManaged public var date: Date
-    @NSManaged public var eventId: UUID
+    @NSManaged public var date: Date!
+    @NSManaged public var eventId: UUID!
     @NSManaged public var homeTeam: String
     @NSManaged public var combinedMarketMargin: Float
     @NSManaged public var homeOdds: NSOrderedSet?

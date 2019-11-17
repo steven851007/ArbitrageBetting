@@ -35,6 +35,24 @@ class OddsAPIResponseObject: Codable {
     let sites: OddsAPISites?
     let league: OddsAPILeague
     
+    var hasAtLeastOneOdds: Bool {
+        var highestHomeOdd = Float.leastNormalMagnitude
+        var highestAwayOdd = Float.leastNormalMagnitude
+        var highestDrawOdd = Float.leastNormalMagnitude
+        for oddsAPISite in self.sites?.moneyRun?.allSites ?? [] {
+            highestHomeOdd = max(highestHomeOdd, oddsAPISite.odds.home ?? Float.leastNormalMagnitude)
+            highestAwayOdd = max(highestAwayOdd, oddsAPISite.odds.away ?? Float.leastNormalMagnitude)
+            highestDrawOdd = max(highestDrawOdd, oddsAPISite.odds.draw ?? Float.leastNormalMagnitude)
+        }
+        if highestHomeOdd == Float.leastNormalMagnitude ||
+           highestAwayOdd == Float.leastNormalMagnitude ||
+            highestDrawOdd == Float.leastNormalMagnitude {
+            return false
+        }
+        
+        return true
+    }
+    
     var combinedMarketMargin: Float? {
         return self.sites?.moneyRun?.combinedMarketMargin
     }

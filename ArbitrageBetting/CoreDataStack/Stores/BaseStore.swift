@@ -39,6 +39,10 @@ class BaseStore<T> where T: NSManagedObject {
         return T(context: self.context)
     }
     
+    func deleteObject(_ object: T) {
+        self.context.delete(object)
+    }
+    
     func deleteObjectsWithRequest(_ request: NSBatchDeleteRequest) {
         do {
             try context.execute(request)
@@ -61,23 +65,59 @@ class BaseStore<T> where T: NSManagedObject {
     }
 }
 
-class OddsStore: BaseStore<Odds> {
-    func applyFilterFor(sites: [String]) {
-        for odd in self.allObjects() {
-            odd.isActive = sites.isEmpty ? true : sites.contains(odd.bookmakerName)
-        }
-    }
-}
-
 class HomeOddsStore: BaseStore<HomeOdds> {
     
-    
+    func createOrUpdateIn(_ homeOddsArray: inout [HomeOdds], with oddsAPISite: OddsAPISite) -> HomeOdds? {
+        if let homeOdds = oddsAPISite.odds.home {
+            if let result = (homeOddsArray.filter { $0.bookmakerName == oddsAPISite.name }).first {
+                if result.odds != homeOdds {
+                    result.odds = homeOdds
+                }
+            } else {
+                let newHomeOdd = self.newObject()
+                newHomeOdd.bookmakerName = oddsAPISite.name
+                newHomeOdd.odds = homeOdds
+                return newHomeOdd
+            }
+        }
+        return nil
+    }
 }
 
 class AwayOddsStore: BaseStore<AwayOdds> {
 
+    func createOrUpdateIn(_ awayOddsArray: inout [AwayOdds], with oddsAPISite: OddsAPISite) -> AwayOdds? {
+        if let awayOdds = oddsAPISite.odds.away {
+            if let result = (awayOddsArray.filter { $0.bookmakerName == oddsAPISite.name }).first {
+                if result.odds != awayOdds {
+                    result.odds = awayOdds
+                }
+            } else {
+                let newAwayOdd = self.newObject()
+                newAwayOdd.bookmakerName = oddsAPISite.name
+                newAwayOdd.odds = awayOdds
+                return newAwayOdd
+            }
+        }
+        return nil
+    }
 }
 
 class DrawOddsStore: BaseStore<DrawOdds> {
 
+    func createOrUpdateIn(_ drawOddsArray: inout [DrawOdds], with oddsAPISite: OddsAPISite) -> DrawOdds? {
+        if let drawOdds = oddsAPISite.odds.draw {
+            if let result = (drawOddsArray.filter { $0.bookmakerName == oddsAPISite.name }).first {
+                if result.odds != drawOdds {
+                    result.odds = drawOdds
+                }
+            } else {
+                let newDrawOdd = self.newObject()
+                newDrawOdd.bookmakerName = oddsAPISite.name
+                newDrawOdd.odds = drawOdds
+                return newDrawOdd
+            }
+        }
+        return nil
+    }
 }

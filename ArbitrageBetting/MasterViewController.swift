@@ -17,7 +17,7 @@ class MasterViewController: UITableViewController {
     var oddsApiNetworkHandler: OddsAPINetworkHandler!
     var fcr: NSFetchedResultsController<Event>!
     var coreDataStack: CoreDataStack!
-//    var diffableDataSource: UITableViewDiffableDataSource<String, NSManagedObjectID>!
+    var diffableDataSource: UITableViewDiffableDataSource<String, NSManagedObjectID>!
     
 
     override func viewDidLoad() {
@@ -25,20 +25,32 @@ class MasterViewController: UITableViewController {
         
         navigationItem.leftBarButtonItem = editButtonItem
         self.coreDataStack.applyFilterFor(sites: ["Pinnacle", "Betfair", "bwin", "Betfair Exchange", "William Hill"])
-//        self.diffableDataSource = UITableViewDiffableDataSource<String, NSManagedObjectID>(tableView: self.tableView, cellProvider: { (tableView, indexPath, _) -> UITableViewCell? in
-//            return nil
-//        })
-//        self.tableView.dataSource = self.diffableDataSource
-        
+        self.diffableDataSource = UITableViewDiffableDataSource<String, NSManagedObjectID>(tableView: self.tableView, cellProvider: { (tableView, indexPath, _) -> UITableViewCell? in
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+            guard self.validateIndexPath(indexPath) else {
+                return cell
+            }
+            let object = self.fcr.object(at: indexPath)
+            cell.textLabel!.text = object.homeTeam + " - " + object.awayTeam
+            guard let homeOdds = object.homeOdds?.firstObject as? HomeOdds,
+            let awayOdds = object.awayOdds?.firstObject as? AwayOdds,
+            let drawOdds = object.drawOdds?.firstObject as? DrawOdds else {
+                return cell
+            }
+            cell.detailTextLabel?.text = "1: \(homeOdds.bookmakerName) X: \(drawOdds.bookmakerName) 2: \(awayOdds.bookmakerName) %: \(object.combinedMarketMargin)"
+            return cell
+        })
+        self.tableView.dataSource = self.diffableDataSource
+        self.tableView.delegate = self
         self.fcr.delegate = self
         do {
             try self.fcr.performFetch()
-            self.tableView.reloadData()
+            self.updateSnapshot()
         } catch {
             print("Unable to Perform Fetch Request")
             print("\(error), \(error.localizedDescription)")
         }
-//        self.oddsApiNetworkHandler.sendRequest { responseObject, error in
+//        self.oddsApiNetworkHandler.fetchLatestEvents { responseObject, error in
 //            guard let responseObject = responseObject, error == nil else {
 //                print(error ?? "Unknown error")
 //                return
@@ -48,6 +60,21 @@ class MasterViewController: UITableViewController {
 //                self.tableView.reloadData()
 //            }
 //        }
+    }
+    
+    func updateSnapshot() {
+        var diffableDataSourceSnapshot = NSDiffableDataSourceSnapshot<String, NSManagedObjectID>()
+        guard let sections = self.fcr.sections else { return }
+        let sectionIds = sections.map { $0.name }
+        diffableDataSourceSnapshot.appendSections(sectionIds)
+        
+        for (_, sectionInfo) in sections.enumerated() {
+            guard let objects = sectionInfo.objects as? [NSManagedObject] else { return }
+            let objectIds = objects.map { $0.objectID }
+            diffableDataSourceSnapshot.appendItems(objectIds, toSection: sectionInfo.name)
+        }
+            
+        self.diffableDataSource.apply(diffableDataSourceSnapshot)
     }
 
     // MARK: - Segues
@@ -64,22 +91,10 @@ class MasterViewController: UITableViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return self.fcr.sections?[section].name
-    }
-
-    override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        return self.fcr.sectionIndexTitles
-    }
-
-    // MARK: - Table View
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return self.fcr.sections?.count ?? 0
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.fcr.fetchedObjects?.count ?? 0
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UILabel()
+        view.text = self.fcr.sections?[section].name
+        return view
     }
     
     func validateIndexPath(_ indexPath: IndexPath) -> Bool {
@@ -92,46 +107,12 @@ class MasterViewController: UITableViewController {
         return false
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        guard self.validateIndexPath(indexPath) else {
-            return cell
-        }
-        let object = self.fcr.object(at: indexPath)
-        cell.textLabel!.text = object.homeTeam + " - " + object.awayTeam
-        guard let homeOdds = object.homeOdds?.firstObject as? HomeOdds,
-        let awayOdds = object.awayOdds?.firstObject as? AwayOdds,
-        let drawOdds = object.drawOdds?.firstObject as? DrawOdds else {
-            return cell
-        }
-        cell.detailTextLabel?.text = "1: \(homeOdds.bookmakerName) X: \(drawOdds.bookmakerName) 2: \(awayOdds.bookmakerName) %: \(object.combinedMarketMargin)"
-        return cell
-    }
-
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            responseObjects.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-        }
-    }
-
-
 }
 
 extension MasterViewController: NSFetchedResultsControllerDelegate {
     
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith diff: CollectionDifference<NSManagedObjectID>) {
-        
-    }
-    
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        self.tableView.reloadData()
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
+        let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
+        self.diffableDataSource.apply(snapshot)
     }
 }

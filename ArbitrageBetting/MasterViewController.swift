@@ -19,6 +19,9 @@ class MasterViewController: UITableViewController {
     var coreDataStack: CoreDataStack!
     var diffableDataSource: UITableViewDiffableDataSource<String, NSManagedObjectID>!
     var updatedObjects = [NSManagedObjectID]()
+    var notificationCenter = NotificationCenter.default
+    
+    private var snapshot: NSDiffableDataSourceSnapshot<String, NSManagedObjectID>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,8 +31,9 @@ class MasterViewController: UITableViewController {
         self.refreshControl!.addTarget(self, action: #selector(fetchData(_:)), for: UIControl.Event.valueChanged)
         tableView.addSubview(refreshControl!)
         
+        self.notificationCenter.addObserver(self, selector: #selector(eventStoreObjectsDidChange), name: NSNotification.Name.EventStoreObjectsDidChange, object: nil)
+        
         navigationItem.leftBarButtonItem = editButtonItem
-        self.coreDataStack.applyFilterFor(sites: ["Pinnacle", "Betfair", "bwin", "Betfair Exchange", "William Hill"])
         self.diffableDataSource = UITableViewDiffableDataSource<String, NSManagedObjectID>(tableView: self.tableView, cellProvider: { [unowned self] (tableView, indexPath, _) -> UITableViewCell? in
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
             guard self.validateIndexPath(indexPath) else {
@@ -43,13 +47,24 @@ class MasterViewController: UITableViewController {
                 return cell
             }
             cell.detailTextLabel?.text = "1: \(homeOdds.bookmakerName) X: \(drawOdds.bookmakerName) 2: \(awayOdds.bookmakerName) %: \(object.combinedMarketMargin)"
-            cell.contentView.backgroundColor = self.updatedObjects.contains(object.objectID) ? .black : .darkGray
+            cell.contentView.backgroundColor = self.updatedObjects.contains(object.objectID) ? .darkGray : .black
             return cell
         })
         self.tableView.dataSource = self.diffableDataSource
         self.tableView.delegate = self
         self.fcr.delegate = self
+        self.coreDataStack.applyFilterFor(sites: ["Pinnacle", "Betfair", "bwin", "Betfair Exchange", "William Hill"])
         self.fcr.fetch()
+    }
+    
+    @objc
+    func eventStoreObjectsDidChange(_ notification: Notification) {
+        guard self.diffableDataSource.numberOfSections(in: self.tableView) > 0 else { return }
+        self.updatedObjects = notification.userInfo?[Notification.Name.EventStoreObjectsDidChange] as? [NSManagedObjectID] ?? []
+        if let snapshot = self.snapshot {
+            self.diffableDataSource.apply(snapshot)
+            self.snapshot = nil
+        }
     }
     
     @objc func fetchData(_ control: UIRefreshControl) {
@@ -99,10 +114,10 @@ extension MasterViewController: NSFetchedResultsControllerDelegate {
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
-        if self.diffableDataSource.numberOfSections(in: self.tableView) > 0 {
-            self.updatedObjects = snapshot.itemIdentifiers
+        self.snapshot = snapshot
+        if self.diffableDataSource.numberOfSections(in: self.tableView) == 0 {
+            self.diffableDataSource.apply(snapshot)
         }
-        self.diffableDataSource.apply(snapshot)
     }
     
 

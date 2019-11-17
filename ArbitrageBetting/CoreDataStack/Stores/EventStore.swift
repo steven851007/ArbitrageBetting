@@ -9,7 +9,78 @@
 import Foundation
 import CoreData
 
+public struct EventObjectsDidChangeNotification {
+
+    init(note: Notification) {
+        assert(note.name == .NSManagedObjectContextObjectsDidChange)
+        notification = note
+    }
+
+    public var insertedObjects: Set<NSManagedObject> {
+        return objects(forKey: NSInsertedObjectsKey).filter { $0.isKind(of: Event.self) }
+    }
+
+    public var updatedObjects: Set<NSManagedObject> {
+        return objects(forKey: NSUpdatedObjectsKey).filter { $0.isKind(of: Event.self) }
+    }
+
+    public var deletedObjects: Set<NSManagedObject> {
+        return objects(forKey: NSDeletedObjectsKey).filter { $0.isKind(of: Event.self) }
+    }
+
+    public var refreshedObjects: Set<NSManagedObject> {
+        return objects(forKey: NSRefreshedObjectsKey).filter { $0.isKind(of: Event.self) }
+    }
+
+    public var invalidatedObjects: Set<NSManagedObject> {
+        return objects(forKey: NSInvalidatedObjectsKey).filter { $0.isKind(of: Event.self) }
+    }
+
+    public var invalidatedAllObjects: Bool {
+        return (notification as Notification).userInfo?[NSInvalidatedAllObjectsKey] != nil
+    }
+
+    public var managedObjectContext: NSManagedObjectContext {
+        guard let c = notification.object as? NSManagedObjectContext else { fatalError("Invalid notification object") }
+        return c
+    }
+
+
+    // MARK: Private
+    fileprivate let notification: Notification
+
+    fileprivate func objects(forKey key: String) -> Set<NSManagedObject> {
+        return ((notification as Notification).userInfo?[key] as? Set<NSManagedObject>) ?? Set()
+    }
+
+}
+
+extension Notification.Name {
+    static let EventStoreObjectsDidChange = Notification.Name("EventStoreObjectsDidChange")
+
+}
+
 class EventStore: BaseStore<Event> {
+    
+    let notificationCenter: NotificationCenter
+    
+    init(context: NSManagedObjectContext, notificationCenter: NotificationCenter = NotificationCenter.default) {
+        self.notificationCenter = notificationCenter
+        super.init(context: context)
+        self.notificationCenter.addObserver(self, selector: #selector(contextObjectsDidChange(_:)), name: Notification.Name.NSManagedObjectContextObjectsDidChange, object: nil)
+    }
+    
+    @objc
+    func contextObjectsDidChange(_ notification: Notification) {
+        let objectsDidChangeNotification = EventObjectsDidChangeNotification(note: notification)
+        var changedIDs = objectsDidChangeNotification.insertedObjects.map { $0.objectID }
+        changedIDs.append(contentsOf: objectsDidChangeNotification.updatedObjects.map {  $0.objectID })
+        guard !changedIDs.isEmpty else { return }
+        print(objectsDidChangeNotification.updatedObjects)
+        DispatchQueue.main.async {
+            self.notificationCenter.post(name: Notification.Name.EventStoreObjectsDidChange, object: self, userInfo: [Notification.Name.EventStoreObjectsDidChange: changedIDs])
+        }
+    }
     
     func fcr() -> EventFetchedResulsController {
         let fetchRequest: NSFetchRequest<Event> = Event.fetchRequest()

@@ -40,15 +40,18 @@ class CoreDataSyncronizer {
         var drawOddsArray = event.drawOdds?.array as? [DrawOdds] ?? [DrawOdds]()
         
         for oddsAPISite in responseObject.sites?.moneyRun?.allSites ?? [] {
-            if let newHomeOdd = self.homeOddsStore.createOrUpdateIn(&homeOddsArray, with: oddsAPISite) {
+            if let newHomeOdd = self.homeOddsStore.createOrUpdateIn(homeOddsArray, with: oddsAPISite) {
+                newHomeOdd.event = event
                 homeOddsArray.append(newHomeOdd)
             }
             
-            if let newAwayOdd = self.awayOddsStore.createOrUpdateIn(&awayOddsArray, with: oddsAPISite) {
+            if let newAwayOdd = self.awayOddsStore.createOrUpdateIn(awayOddsArray, with: oddsAPISite) {
+                newAwayOdd.event = event
                 awayOddsArray.append(newAwayOdd)
             }
 
-            if let newDrawOdd = self.drawOddsStore.createOrUpdateIn(&drawOddsArray, with: oddsAPISite) {
+            if let newDrawOdd = self.drawOddsStore.createOrUpdateIn(drawOddsArray, with: oddsAPISite) {
+                newDrawOdd.event = event
                 drawOddsArray.append(newDrawOdd)
             }
 
@@ -71,19 +74,19 @@ class CoreDataSyncronizer {
         if event.homeTeam != responseObject.event.home {
             event.homeTeam = responseObject.event.home
         }
-        
+
         if event.awayTeam != responseObject.event.away {
             event.awayTeam = responseObject.event.away
         }
-        
+
         if event.date != responseObject.event.start_time {
             event.date = responseObject.event.start_time
         }
-        
+
         if event.combinedMarketMargin != 1/highestHomeOdd + 1/highestAwayOdd + 1/highestDrawOdd {
             event.combinedMarketMargin = 1/highestHomeOdd + 1/highestAwayOdd + 1/highestDrawOdd
         }
-        
+
         if event.homeOdds != NSOrderedSet(array: homeOddsArray) {
             event.homeOdds = NSOrderedSet(array: homeOddsArray)
         }

@@ -53,9 +53,6 @@ class OddsAPIResponseObject: Codable {
         return true
     }
     
-    var combinedMarketMargin: Float? {
-        return self.sites?.moneyRun?.combinedMarketMargin
-    }
 }
 
 class OddsAPIEvent: Codable {

@@ -67,7 +67,7 @@ class BaseStore<T> where T: NSManagedObject {
 
 class HomeOddsStore: BaseStore<HomeOdds> {
     
-    func createOrUpdateIn(_ homeOddsArray: inout [HomeOdds], with oddsAPISite: OddsAPISite) -> HomeOdds? {
+    func createOrUpdateIn(_ homeOddsArray: [HomeOdds], with oddsAPISite: OddsAPISite) -> HomeOdds? {
         if let homeOdds = oddsAPISite.odds.home {
             if let result = (homeOddsArray.filter { $0.bookmakerName == oddsAPISite.name }).first {
                 if result.odds != homeOdds {
@@ -86,7 +86,7 @@ class HomeOddsStore: BaseStore<HomeOdds> {
 
 class AwayOddsStore: BaseStore<AwayOdds> {
 
-    func createOrUpdateIn(_ awayOddsArray: inout [AwayOdds], with oddsAPISite: OddsAPISite) -> AwayOdds? {
+    func createOrUpdateIn(_ awayOddsArray: [AwayOdds], with oddsAPISite: OddsAPISite) -> AwayOdds? {
         if let awayOdds = oddsAPISite.odds.away {
             if let result = (awayOddsArray.filter { $0.bookmakerName == oddsAPISite.name }).first {
                 if result.odds != awayOdds {
@@ -105,7 +105,7 @@ class AwayOddsStore: BaseStore<AwayOdds> {
 
 class DrawOddsStore: BaseStore<DrawOdds> {
 
-    func createOrUpdateIn(_ drawOddsArray: inout [DrawOdds], with oddsAPISite: OddsAPISite) -> DrawOdds? {
+    func createOrUpdateIn(_ drawOddsArray: [DrawOdds], with oddsAPISite: OddsAPISite) -> DrawOdds? {
         if let drawOdds = oddsAPISite.odds.draw {
             if let result = (drawOddsArray.filter { $0.bookmakerName == oddsAPISite.name }).first {
                 if result.odds != drawOdds {

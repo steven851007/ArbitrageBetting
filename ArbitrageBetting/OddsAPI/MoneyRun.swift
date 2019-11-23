@@ -12,64 +12,6 @@ class MoneyRun: Codable {
     
     var sitesFilter = ["Pinnacle", "Betfair", "bwin", "Betfair Exchange", "William Hill"]
     
-    var combinedMarketMargin: Float {
-        return self.maxHomeProbability + self.maxAwayProbability + self.maxDrawProbability
-    }
-    
-    var maxHomeProbability: Float {
-        return 1/self.maxHomeOdd
-    }
-    
-    var maxAwayProbability: Float {
-        return 1/self.maxAwayOdd
-    }
-    
-    var maxDrawProbability: Float {
-        return 1/self.maxDrawOdd
-    }
-    
-    var maxHomeSite: OddsAPISite? {
-        return self.allSitesOrderedByHomeOdds.first
-    }
-    
-    var maxDrawSite: OddsAPISite? {
-        return self.allSitesOrderedByDrawOdds.first
-    }
-    
-    var maxAwaySite: OddsAPISite? {
-        return self.allSitesOrderedByAwayOdds.first
-    }
-    
-    var maxHomeOdd: Float {
-        return self.maxHomeSite?.odds.home ?? Float.leastNormalMagnitude
-    }
-    
-    var maxDrawOdd: Float {
-        return self.maxDrawSite?.odds.draw ?? Float.leastNormalMagnitude
-    }
-    
-    var maxAwayOdd: Float {
-        return self.maxAwaySite?.odds.away ?? Float.leastNormalMagnitude
-    }
-    
-    var allSitesOrderedByHomeOdds: [OddsAPISite] {
-        return self.allSites.filter { (site) -> Bool in
-            site.odds.home != nil
-        }.sorted(by: { $0.odds.home! > $1.odds.home! })
-    }
-    
-    var allSitesOrderedByAwayOdds: [OddsAPISite] {
-        return self.allSites.filter { (site) -> Bool in
-            site.odds.away != nil
-        }.sorted(by: { $0.odds.away! > $1.odds.away! })
-    }
-    
-    var allSitesOrderedByDrawOdds: [OddsAPISite] {
-        return self.allSites.filter { (site) -> Bool in
-            site.odds.draw != nil
-        }.sorted(by: { $0.odds.draw! > $1.odds.draw! })
-    }
-    
     var allSites: [OddsAPISite] {
         return [self.twelveBet,
         self.oneEightEightBet,
